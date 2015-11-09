@@ -186,8 +186,8 @@ myKeys =
   , ("M-C-l", safeSpawn "slock" [])
   -- Application launcher
   , ("M-p", safeSpawn "rofi" ["-show", "run"])
-  , ("M-C-p", safeSpawn "/home/freaken/.xmonad/passmenu" [])
-  , ("M-C-u", safeSpawn "/home/freaken/.xmonad/passmenu" ["users"])
+  , ("M-C-p", safeSpawn "passmenu" [])
+  , ("M-C-u", safeSpawn "passmenu" ["users"])
   -- Volume
   , ("<XF86AudioLowerVolume>", safeSpawn "/home/freaken/bin/volume" ["-5"])
   , ("<XF86AudioRaiseVolume>", safeSpawn "/home/freaken/bin/volume" ["+5"])
