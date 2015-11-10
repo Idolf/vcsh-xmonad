@@ -25,3 +25,4 @@ Executable xmonad
                      , old-locale
                      , old-time
                      , process
+                     , filepath

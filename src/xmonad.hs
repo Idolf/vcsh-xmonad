@@ -18,6 +18,7 @@ import Data.Ratio((%))
 import Control.Monad(when)
 import Control.Concurrent (threadDelay)
 import System.Directory
+import System.FilePath((</>))
 import System.Locale
 import System.Time
 import System.Exit
@@ -64,37 +65,40 @@ import XMonad.Util.EZConfig
 
 
 main :: IO ()
-main = checkTopicConfig myTopics myTopicConfig >> xmonad idolfConfig
+main = do checkTopicConfig myTopics myTopicConfig
+          scratchpadDir <- myScratchpadDir
+          xmonad (idolfConfig scratchpadDir)
 
 myTerm :: String
 myTerm = "sakura"
 
-idolfConfig = withUrgencyHookC LibNotifyUrgencyHook urgencyConfig { remindWhen = Every 10 } $ ewmh $ desktopConfig
-   { manageHook         = manageHook desktopConfig <+>
-                          composeAll myManageHook <+>
-                          scratchpadManageHook (W.RationalRect 0.1 0.1 0.8 0.8)
-   , layoutHook         = smartBorders $ setWorkspaceDirs myLayout
-   , terminal           = "exec " ++ myTerm
-   , modMask            = mod4Mask
-   , focusFollowsMouse  = False
-   , handleEventHook    = myEventHook
-   , logHook            = fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8
-   , borderWidth        = 0
-   , workspaces         = myTopics
-   , startupHook        = return () >> checkKeymap idolfConfig myKeys >> startupHook desktopConfig >> setWMName "LG3D"
-   }
-   `removeKeysP` (["M-q"] ++ ["M-" ++ m ++ k | m <- ["", "S-"], k <- map show [1..9 :: Int]])
-   `additionalKeysP` myKeys
+idolfConfig scratchpadDir
+  = withUrgencyHookC LibNotifyUrgencyHook urgencyConfig { remindWhen = Every 10 } $ ewmh $ desktopConfig
+    { manageHook         = manageHook desktopConfig <+>
+                           composeAll myManageHook <+>
+                           scratchpadManageHook (W.RationalRect 0.1 0.1 0.8 0.8)
+    , layoutHook         = smartBorders $ setWorkspaceDirs myLayout
+    , terminal           = "exec " ++ myTerm
+    , modMask            = mod4Mask
+    , focusFollowsMouse  = False
+    , handleEventHook    = myEventHook scratchpadDir
+    , logHook            = fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8
+    , borderWidth        = 0
+    , workspaces         = myTopics
+    , startupHook        = return () >> checkKeymap (idolfConfig scratchpadDir) myKeys >> startupHook desktopConfig >> setWMName "LG3D"
+    }
+    `removeKeysP` (["M-q"] ++ ["M-" ++ m ++ k | m <- ["", "S-"], k <- map show [1..9 :: Int]])
+    `additionalKeysP` myKeys
 
 
 myLayout = onWorkspace "im" (withIM (1%5) (Role "buddy_list") Grid) $
            multiCol [1] 4 (3/100) (4/7) |||
            Full
 
-myEventHook :: Event -> X All
-myEventHook = deleteUnimportant (=~ "^(scratchpad|vm)-") callback
+myEventHook :: FilePath -> Event -> X All
+myEventHook scratchpadDir = deleteUnimportant (=~ "^(scratchpad|vm)-") callback
   where callback dead = withDir $ \tag dir ->
-                  when (tag `elem` dead && tag =~ "^scratchpad-" && dir =~ ('^' : myScratchpadDir)) $ io $ deleteIfEmpty dir
+          when (tag `elem` dead && tag =~ "^scratchpad-" && dir =~ ('^' : scratchpadDir)) $ io $ deleteIfEmpty dir
         deleteIfEmpty dir = do contents <- getDirectoryContents dir
                                when (null $ contents \\ [".", ".."]) $ removeDirectory dir
                             `catch` \(_e :: IOError) -> return ()
@@ -135,7 +139,7 @@ myBrowser :: String
 myBrowser = "chromium-browser"
 
 shell :: X ()
-shell = spawn (terminal idolfConfig)
+shell = spawn (terminal (idolfConfig ""))
 
 browser, incogBrowser, newBrowser, appBrowser :: [String] -> X ()
 browser         = safeSpawn myBrowser
@@ -189,9 +193,9 @@ myKeys =
   , ("M-C-p", safeSpawn "passmenu" [])
   , ("M-C-u", safeSpawn "passmenu" ["users"])
   -- Volume
-  , ("<XF86AudioLowerVolume>", safeSpawn "/home/freaken/bin/volume" ["-5"])
-  , ("<XF86AudioRaiseVolume>", safeSpawn "/home/freaken/bin/volume" ["+5"])
-  , ("<XF86AudioMute>",        safeSpawn "/home/freaken/bin/volume" ["toggle"])
+  , ("<XF86AudioLowerVolume>", safeSpawn "volume" ["-5"])
+  , ("<XF86AudioRaiseVolume>", safeSpawn "volume" ["+5"])
+  , ("<XF86AudioMute>",        safeSpawn "volume" ["toggle"])
   -- Screen navigation
   , ("M-<Left>", prevScreen)
   , ("M-<Right>", nextScreen)
@@ -211,7 +215,10 @@ myKeys =
   , ("M-m", addWorkspaceMoveWindowPrompt myXPConfig)
   , ("M-<Backspace>", killAll >> myRemoveWorkspace)
   , ("M-r", renameWorkspace myXPConfig)
-  , ("M-s", do dir <- liftIO $ formatCalendarTime defaultTimeLocale (myScratchpadDir ++ "/%Y-%m-%d-%H:%M:%S")  `fmap` (getClockTime >>= toCalendarTime)
+  , ("M-s", do dir <- liftIO $ do
+                 scratchpadDir <- myScratchpadDir
+                 time <- getClockTime >>= toCalendarTime
+                 return $ formatCalendarTime defaultTimeLocale (scratchpadDir ++ "/%Y-%m-%d-%H:%M:%S") time
                liftIO $ createDirectory dir
                newScratchpad
                changeDir_ dir
@@ -221,10 +228,8 @@ myKeys =
   -- Scratchpad
   , ("M-S-<Space>", scratchpadSpawnActionCustom ("exec " ++ myTerm ++ " --class=scratchpad-window"))
   , ("M-S-g", toggleGlobal)
-  -- Logging inspired by gwern
-  , ("M-S-l", spawn ("date>>"++lg) >> appendFilePrompt myXPConfig lg)
   ]
-  where lg = "/home/freaken/yes/2015-log.txt"
+
 -- Remove workspace unless it's a topic
 myRemoveWorkspace :: X ()
 myRemoveWorkspace = do
@@ -233,8 +238,8 @@ myRemoveWorkspace = do
     W.StackSet {W.current = W.Screen { W.workspace = W.Workspace { W.tag = this } } } ->
       when (this `notElem` myTopics) removeWorkspace
 
-myScratchpadDir :: String
-myScratchpadDir = "/home/freaken/scratchpads"
+myScratchpadDir :: IO String
+myScratchpadDir = (</> "scratchpads") <$> getHomeDirectory
 
 instance HasColorizer WindowSpace where
   defaultColorizer ws isFg =
