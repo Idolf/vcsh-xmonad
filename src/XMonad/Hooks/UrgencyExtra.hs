@@ -15,5 +15,5 @@ instance UrgencyHook LibNotifyUrgencyHook where
     whenJust (W.findTag w ws) (flash name)
       where flash name index =
               if index `elem` ["irc", "im"]
-              then spawn "~/.xmonad/blink || notify --urgent \"Someone is talking to you!\""
+              then spawn "blink || notify --urgent \"Someone is talking to you!\""
               else safeSpawn "notify" ["--urgent", index ++ ": " ++ show name]
