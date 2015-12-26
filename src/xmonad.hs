@@ -196,6 +196,9 @@ myKeys =
   , ("<XF86AudioLowerVolume>", safeSpawn "volume" ["-5"])
   , ("<XF86AudioRaiseVolume>", safeSpawn "volume" ["+5"])
   , ("<XF86AudioMute>",        safeSpawn "volume" ["toggle"])
+  -- Brightness
+  , ("<XF86MonBrightnessDown>", safeSpawn "brightness" ["down"])
+  , ("<XF86MonBrightnessUp>", safeSpawn "brightness" ["up"])
   -- Screen navigation
   , ("M-<Left>", prevScreen)
   , ("M-<Right>", nextScreen)
