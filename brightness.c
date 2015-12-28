@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-static const long int MAX_BRIGHTNESS = 3000;
+static const long int MAX_BRIGHTNESS = 4648;
 static const char* PATH = "/sys/class/drm/card0-LVDS-1/intel_backlight/brightness";
 
 int main (int argc, char **argv) {
