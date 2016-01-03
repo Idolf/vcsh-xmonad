@@ -170,7 +170,7 @@ myTopicConfig = TopicConfig
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
       , ("virtualbox", safeSpawn "virtualbox" [])
-      , ("procrastination", newBrowser [ "https://cloud.feedly.com"
+      , ("procrastination", newBrowser [ "https://feedly.com"
                                        , "http://reddit.com" ])
       , ("ping", safeSpawn myTerm ["-e", "ping", "8.8.8.8"])
       , ("wireshark", safeSpawn "wireshark" ["-k", "-i", "any"])
