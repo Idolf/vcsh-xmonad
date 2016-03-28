@@ -111,6 +111,7 @@ myTopics =
   , "irc"
   , "organise"
   , "gmail"
+  , "pmail"
   , "procrastination"
   , "virtualbox"
   , "wireshark"
@@ -169,6 +170,7 @@ myTopicConfig = TopicConfig
       , ("irc", safeSpawn myTerm ["-e", "ssh", "lolbox.pwnies.dk", "-t", "screen", "-U", "-dR", "irc"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
+      , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
                                        , "http://reddit.com" ])
