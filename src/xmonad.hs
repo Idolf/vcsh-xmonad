@@ -40,12 +40,13 @@ import XMonad.Actions.WithAll
 import XMonad.Actions.DynamicWorkspaces
 
 ----- Hooks
-import XMonad.Hooks.FadeInactive
-import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.UrgencyHook
-import XMonad.Hooks.SetWMName
 import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.FadeInactive
+import XMonad.Hooks.ICCCMFocus
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
+import XMonad.Hooks.SetWMName
+import XMonad.Hooks.UrgencyHook
 
 ----- Layout
 import XMonad.Layout.Grid
@@ -82,12 +83,12 @@ idolfConfig scratchpadDir
     , modMask            = mod4Mask
     , focusFollowsMouse  = False
     , handleEventHook    = myEventHook scratchpadDir
-    , logHook            = fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8
+    , logHook            = (fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8) >> takeTopFocus
     , borderWidth        = 0
     , workspaces         = myTopics
     , startupHook        = return () >> checkKeymap (idolfConfig scratchpadDir) myKeys >> startupHook desktopConfig >> setWMName "LG3D"
     }
-    `removeKeysP` (["M-q"] ++ ["M-" ++ m ++ k | m <- ["", "S-"], k <- map show [1..9 :: Int]])
+    `removeKeysP` (["M-" ++ m ++ k | m <- ["", "S-"], k <- map show [1..9 :: Int]])
     `additionalKeysP` myKeys
 
 
@@ -167,7 +168,7 @@ myTopicConfig = TopicConfig
       [ ("im", safeSpawn "pidgin" [])
       , ("yes", safeSpawn "emacs" ["yes.org"])
       , ("web", browser [])
-      , ("irc", safeSpawn myTerm ["-e", "ssh", "lolbox.pwnies.dk", "-t", "screen", "-U", "-dR", "irc"])
+      , ("irc", safeSpawn myTerm ["-e", "sh -c 'exec gcloud-ssh $(gcloud-resolve irssi) -t screen -U -dR irc'"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
