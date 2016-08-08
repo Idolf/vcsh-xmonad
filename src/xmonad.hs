@@ -168,7 +168,7 @@ myTopicConfig = TopicConfig
       [ ("im", safeSpawn "pidgin" [])
       , ("yes", safeSpawn "emacs" ["yes.org"])
       , ("web", browser [])
-      , ("irc", safeSpawn myTerm ["-e", "sh -c 'exec gcloud-ssh $(gcloud-resolve irssi) -t screen -U -dR irc'"])
+      , ("irc", safeSpawn myTerm ["-e", "gcloud compute --project disco-song-133520 ssh --zone europe-west1-d --ssh-key-file ~/.ssh/keys/irssi --ssh-flag '-o PubkeyAuthentication=yes' irssi -t screen -U -dR irc"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
