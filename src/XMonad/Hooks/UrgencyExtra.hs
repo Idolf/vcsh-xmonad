@@ -14,6 +14,6 @@ instance UrgencyHook LibNotifyUrgencyHook where
     ws <- gets windowset
     whenJust (W.findTag w ws) (flash name)
       where flash name index =
-              if index `elem` ["irc", "im"]
+              if index `elem` ["irc", "im", "hangouts", "pidgin"]
               then spawn "blink || notify --urgent \"Someone is talking to you!\""
               else safeSpawn "notify" ["--urgent", index ++ ": " ++ show name]

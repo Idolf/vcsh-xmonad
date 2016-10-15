@@ -92,9 +92,11 @@ idolfConfig scratchpadDir
     `additionalKeysP` myKeys
 
 
-myLayout = onWorkspace "im" (withIM (1%5) (Role "buddy_list") Grid) $
-           multiCol [1] 4 (3/100) (4/7) |||
-           Full
+myLayout = onWorkspace "pidgin" (withIM (1%5) (Role "buddy_list") Grid) $
+           onWorkspace "im" (withIM (1%5) (Title "Hangouts") baseLayout) $
+           baseLayout
+baseLayout = multiCol [1] 4 (3/100) (4/7) |||
+             Full
 
 myEventHook :: FilePath -> Event -> X All
 myEventHook scratchpadDir = deleteUnimportant (=~ "^(scratchpad|vm)-") callback
@@ -106,10 +108,10 @@ myEventHook scratchpadDir = deleteUnimportant (=~ "^(scratchpad|vm)-") callback
 
 myTopics :: [String]
 myTopics =
-  [ "yes"
-  , "web"
+  [ "web"
   , "im"
   , "irc"
+  , "pidgin"
   , "organise"
   , "gmail"
   , "pmail"
@@ -121,12 +123,12 @@ myTopics =
   ]
 
 setWorkspaceDirs layout =
-    add "yes"               "~/yes"                      $
     workspaceDir "~" layout
   where add ws dir = onWorkspace ws (workspaceDir dir layout)
 
 myManageHook :: [ManageHook]
-myManageHook = [ className =? "Pidgin"          --> doShift "im"
+myManageHook = [ className =? "Pidgin"          --> doShift "pidgin"
+               , appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "im"
                , className =? "VirtualBox"      -->
                  do name <- title
                     case (name =~ "( \\(.*\\))?( \\[[^\\]]+\\])? - Oracle VM VirtualBox$") :: (String,String,String) of
@@ -134,7 +136,6 @@ myManageHook = [ className =? "Pidgin"          --> doShift "im"
                      (n,_,_)  -> do let ws = "vm-" ++ n
                                     liftX (addHiddenWorkspace ws)
                                     doShift ws
-
                ]
 
 myBrowser :: String
@@ -165,10 +166,9 @@ myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
   { topicDirs = M.fromList []
   , topicActions = M.fromList
-      [ ("im", safeSpawn "pidgin" [])
-      , ("yes", safeSpawn "emacs" ["yes.org"])
+      [ ("pidgin", safeSpawn "pidgin" [])
       , ("web", browser [])
-      , ("irc", safeSpawn myTerm ["-e", "gcloud compute --project disco-song-133520 ssh --zone europe-west1-d --ssh-key-file ~/.ssh/keys/irssi --ssh-flag '-o PubkeyAuthentication=yes' irssi -t screen -U -dR irc"])
+      , ("irc", safeSpawn myTerm ["-e", "ssh irssi -t screen -U -dR irc"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
