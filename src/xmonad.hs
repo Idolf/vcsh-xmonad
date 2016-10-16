@@ -192,7 +192,7 @@ myKeys =
   -- Lock
   , ("M-C-l", safeSpawn "slock" [])
   -- Application launcher
-  , ("M-p", safeSpawn "rofi" ["-show", "run"])
+  , ("M-p", safeSpawn "rofi" ["-yoffset", "-150", "-show", "run"])
   , ("M-C-p", safeSpawn "passmenu" [])
   , ("M-C-u", safeSpawn "passmenu" ["users"])
   -- Volume
