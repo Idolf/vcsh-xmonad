@@ -92,8 +92,7 @@ idolfConfig scratchpadDir
     `additionalKeysP` myKeys
 
 
-myLayout = onWorkspace "pidgin" (withIM (1%5) (Role "buddy_list") Grid) $
-           onWorkspace "im" (withIM (1%5) (Title "Hangouts") baseLayout) $
+myLayout = onWorkspace "im" (withIM (1%5) (Title "Hangouts") baseLayout) $
            baseLayout
 baseLayout = multiCol [1] 4 (3/100) (4/7) |||
              Full
@@ -111,7 +110,6 @@ myTopics =
   [ "web"
   , "im"
   , "irc"
-  , "pidgin"
   , "organise"
   , "gmail"
   , "pmail"
@@ -127,8 +125,7 @@ setWorkspaceDirs layout =
   where add ws dir = onWorkspace ws (workspaceDir dir layout)
 
 myManageHook :: [ManageHook]
-myManageHook = [ className =? "Pidgin"          --> doShift "pidgin"
-               , appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "im"
+myManageHook = [ appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "im"
                , className =? "VirtualBox"      -->
                  do name <- title
                     case (name =~ "( \\(.*\\))?( \\[[^\\]]+\\])? - Oracle VM VirtualBox$") :: (String,String,String) of
@@ -166,8 +163,7 @@ myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
   { topicDirs = M.fromList []
   , topicActions = M.fromList
-      [ ("pidgin", safeSpawn "pidgin" [])
-      , ("web", browser [])
+      [ ("web", browser [])
       , ("irc", safeSpawn myTerm ["-e", "ssh irssi -t screen -U -dR irc"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
