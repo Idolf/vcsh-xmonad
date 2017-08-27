@@ -92,10 +92,8 @@ idolfConfig scratchpadDir
     `additionalKeysP` myKeys
 
 
-myLayout = onWorkspace "im" (withIM (1%5) (Title "Hangouts") baseLayout) $
-           baseLayout
-baseLayout = multiCol [1] 4 (3/100) (4/7) |||
-             Full
+myLayout = multiCol [1] 4 (3/100) (4/7) |||
+           Full
 
 myEventHook :: FilePath -> Event -> X All
 myEventHook scratchpadDir = deleteUnimportant (=~ "^(scratchpad|vm)-") callback
@@ -109,6 +107,7 @@ myTopics :: [String]
 myTopics =
   [ "web"
   , "im"
+  , "signal"
   , "irc"
   , "organise"
   , "gmail"
@@ -116,8 +115,6 @@ myTopics =
   , "procrastination"
   , "virtualbox"
   , "wireshark"
-  , "intel"
-  , "ping"
   ]
 
 setWorkspaceDirs layout =
@@ -126,6 +123,7 @@ setWorkspaceDirs layout =
 
 myManageHook :: [ManageHook]
 myManageHook = [ appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "im"
+               , appName =? "crx_bikioccmkafdpakkkcpdbppfkghcmihk" --> doShift "signal"
                , className =? "VirtualBox"      -->
                  do name <- title
                     case (name =~ "( \\(.*\\))?( \\[[^\\]]+\\])? - Oracle VM VirtualBox$") :: (String,String,String) of
@@ -141,11 +139,12 @@ myBrowser = "chromium-browser"
 shell :: X ()
 shell = spawn (terminal (idolfConfig ""))
 
-browser, incogBrowser, newBrowser, appBrowser :: [String] -> X ()
+browser, incogBrowser, newBrowser, appBrowser, appIdBrowser :: [String] -> X ()
 browser         = safeSpawn myBrowser
 incogBrowser s  = safeSpawn myBrowser ("--new-window" : "--incognito" : s)
 newBrowser s    = safeSpawn myBrowser ("--new-window" : s)
 appBrowser      = mapM_ (\s -> safeSpawn myBrowser ["--app=" ++ s])
+appIdBrowser    = mapM_ (\s -> safeSpawn myBrowser ["--app-id=" ++ s])
 
 myXPConfig :: XPConfig
 myXPConfig = defaultXPConfig
@@ -165,13 +164,13 @@ myTopicConfig = TopicConfig
   , topicActions = M.fromList
       [ ("web", browser [])
       , ("irc", safeSpawn myTerm ["-e", "ssh irssi -t screen -U -dR irc"])
+      , ("signal", appIdBrowser ["bikioccmkafdpakkkcpdbppfkghcmihk"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
                                        , "http://reddit.com" ])
-      , ("ping", safeSpawn myTerm ["-e", "ping", "8.8.8.8"])
       , ("wireshark", safeSpawn "wireshark" ["-k", "-i", "any"])
       ]
   , defaultTopicAction = const $ return ()
