@@ -111,6 +111,7 @@ myTopics =
   , "irc"
   , "organise"
   , "gmail"
+  , "slack"
   , "pmail"
   , "procrastination"
   , "virtualbox"
@@ -167,6 +168,7 @@ myTopicConfig = TopicConfig
       , ("signal", appIdBrowser ["bikioccmkafdpakkkcpdbppfkghcmihk"])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://gmail.com"])
+      , ("slaock", appBrowser ["https://seasonedsoftware.slack.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
