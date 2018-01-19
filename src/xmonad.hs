@@ -111,6 +111,7 @@ myTopics =
   , "irc"
   , "organise"
   , "gmail"
+  , "smail"
   , "slack"
   , "pmail"
   , "procrastination"
@@ -167,8 +168,9 @@ myTopicConfig = TopicConfig
       , ("irc", safeSpawn myTerm ["-e", "ssh irssi -t screen -U -dR irc"])
       , ("signal", appIdBrowser ["bikioccmkafdpakkkcpdbppfkghcmihk"])
       , ("organise", appBrowser ["https://calendar.google.com"])
-      , ("gmail", appBrowser ["https://gmail.com"])
-      , ("slaock", appBrowser ["https://seasonedsoftware.slack.com"])
+      , ("gmail", appBrowser ["https://mail.google.com/mail/u/0"])
+      , ("smail", appBrowser ["https://mail.google.com/mail/u/1"])
+      , ("slack", appBrowser ["https://seasonedsoftware.slack.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
@@ -221,7 +223,7 @@ myKeys =
   , ("M-s", do dir <- liftIO $ do
                  scratchpadDir <- myScratchpadDir
                  time <- getClockTime >>= toCalendarTime
-                 return $ formatCalendarTime defaultTimeLocale (scratchpadDir ++ "/%Y-%m-%d-%H:%M:%S") time
+                 return $ formatCalendarTime defaultTimeLocale (scratchpadDir ++ "/%Y-%m-%d-%H%M%S") time
                liftIO $ createDirectory dir
                newScratchpad
                changeDir_ dir
