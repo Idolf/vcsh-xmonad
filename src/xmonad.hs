@@ -15,6 +15,7 @@ import Control.Exception(catch)
 import Data.Monoid(mempty, mappend, All)
 import Data.List((\\))
 import Data.Ratio((%))
+import Data.Default(def)
 import Control.Monad(when)
 import Control.Concurrent (threadDelay)
 import System.Directory
@@ -42,7 +43,6 @@ import XMonad.Actions.DynamicWorkspaces
 ----- Hooks
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.FadeInactive
-import XMonad.Hooks.ICCCMFocus
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.SetWMName
@@ -83,7 +83,7 @@ idolfConfig scratchpadDir
     , modMask            = mod4Mask
     , focusFollowsMouse  = False
     , handleEventHook    = myEventHook scratchpadDir
-    , logHook            = (fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8) >> takeTopFocus
+    , logHook            = fadeOutLogHook $ fadeIf TE.isUnfocusedOnCurrentWS 0.8
     , borderWidth        = 0
     , workspaces         = myTopics
     , startupHook        = return () >> checkKeymap (idolfConfig scratchpadDir) myKeys >> startupHook desktopConfig >> setWMName "LG3D"
@@ -136,7 +136,7 @@ myManageHook = [ appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "
                ]
 
 myBrowser :: String
-myBrowser = "chromium-browser"
+myBrowser = "chromium"
 
 shell :: X ()
 shell = spawn (terminal (idolfConfig ""))
@@ -149,7 +149,7 @@ appBrowser      = mapM_ (\s -> safeSpawn myBrowser ["--app=" ++ s])
 appIdBrowser    = mapM_ (\s -> safeSpawn myBrowser ["--app-id=" ++ s])
 
 myXPConfig :: XPConfig
-myXPConfig = defaultXPConfig
+myXPConfig = def
   { fgColor = "#a8a3f7"
   , bgColor = "#3f3c6d"
   , position = Top
@@ -158,7 +158,7 @@ myXPConfig = defaultXPConfig
  }
 
 myGSConfig :: HasColorizer a => GSConfig a
-myGSConfig = defaultGSConfig {gs_navigate = navNSearch}
+myGSConfig = (buildDefaultGSConfig defaultColorizer) {gs_navigate = navNSearch}
 
 myTopicConfig :: TopicConfig
 myTopicConfig = TopicConfig
@@ -191,7 +191,7 @@ myKeys =
   -- Lock
   , ("M-C-l", safeSpawn "slock" [])
   -- Application launcher
-  , ("M-p", safeSpawn "rofi" ["-yoffset", "-150", "-show", "run"])
+  , ("M-p", safeSpawn "rofi" ["-show", "run"])
   , ("M-C-p", safeSpawn "passmenu" [])
   , ("M-C-u", safeSpawn "passmenu" ["users"])
   -- Volume
@@ -246,7 +246,7 @@ myRemoveWorkspace = do
 myScratchpadDir :: IO String
 myScratchpadDir = (</> "scratchpads") <$> getHomeDirectory
 
-instance HasColorizer WindowSpace where
+instance {-# OVERLAPPING #-} HasColorizer WindowSpace where
   defaultColorizer ws isFg =
     if nonEmptyWS ws || isFg
     then stringColorizer (W.tag ws) isFg

@@ -15,6 +15,11 @@ Executable xmonad
   Ghc-options:         -threaded -O2
   hs-source-dirs:      src
   main-is:             xmonad.hs
+  other-modules:       XMonad.Actions.DynamicWorkspacesExtra
+                     , XMonad.Hooks.UrgencyExtra
+                     , XMonad.Layout.TopicExtra
+                     , XMonad.Layout.WorkspaceDirAlt
+                     , XMonad.Util.ScratchpadAlt
   default-language:    Haskell2010
   build-depends:       base  >= 4 && <5
                      , xmonad
@@ -26,3 +31,4 @@ Executable xmonad
                      , old-time
                      , process
                      , filepath
+                     , data-default

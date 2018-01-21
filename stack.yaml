@@ -2,7 +2,8 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-- xmonad-0.11.1
-- xmonad-contrib-0.11.4
+- xmonad-0.13
+- xmonad-contrib-0.13
 - X11-xft-0.3.1
-resolver: lts-3.13
+- data-default-0.7.1.1
+resolver: lts-10.3
