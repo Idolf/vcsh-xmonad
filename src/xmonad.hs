@@ -174,7 +174,7 @@ myTopicConfig = TopicConfig
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
-                                       , "http://reddit.com" ])
+                                       , "https://old.reddit.com" ])
       , ("wireshark", safeSpawn "wireshark" ["-k", "-i", "any"])
       ]
   , defaultTopicAction = const $ return ()
