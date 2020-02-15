@@ -108,7 +108,6 @@ myTopics =
   [ "web"
   , "im"
   , "signal"
-  , "irc"
   , "organise"
   , "gmail"
   , "smail"
@@ -125,7 +124,7 @@ setWorkspaceDirs layout =
 
 myManageHook :: [ManageHook]
 myManageHook = [ appName =? "crx_nckgahadagoaajjgafhacjanaoiihapd" --> doShift "im"
-               , appName =? "crx_bikioccmkafdpakkkcpdbppfkghcmihk" --> doShift "signal"
+               , className =? "Signal" --> doShift "signal"
                , className =? "VirtualBox"      -->
                  do name <- title
                     case (name =~ "( \\(.*\\))?( \\[[^\\]]+\\])? - Oracle VM VirtualBox$") :: (String,String,String) of
@@ -165,12 +164,11 @@ myTopicConfig = TopicConfig
   { topicDirs = M.fromList []
   , topicActions = M.fromList
       [ ("web", browser [])
-      , ("irc", safeSpawn myTerm ["-e", "ssh irssi -t screen -U -dR irc"])
-      , ("signal", appIdBrowser ["bikioccmkafdpakkkcpdbppfkghcmihk"])
+      , ("signal", safeSpawn "signal" [])
       , ("organise", appBrowser ["https://calendar.google.com"])
       , ("gmail", appBrowser ["https://mail.google.com/mail/u/0"])
       , ("smail", appBrowser ["https://mail.google.com/mail/u/1"])
-      , ("slack", appBrowser ["https://seasonedsoftware.slack.com"])
+      , ("slack", appBrowser ["https://cmperfect.slack.com"])
       , ("pmail", appBrowser ["https://mail.protonmail.com/login"])
       , ("virtualbox", safeSpawn "virtualbox" [])
       , ("procrastination", newBrowser [ "https://feedly.com"
